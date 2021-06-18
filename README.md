@@ -45,7 +45,6 @@ Dimension Tables -
 
 <ol>
  <li>Connect with Pyspark using the configuration in `dl.cfg`(IAM role with S3 Full Access and Redshift Full Access).</li>
-<li>Write SQL 'CREATE', 'DROP' and 'INSERT' statements in `sql_queries.py` and run <br>`create_tables.py` to run it to create the tables.</li>
-<li>Run `etl.py` to load the data(json files) from S3 to Redshift staging tables, then select the required columns and insert into fact and dimentional tables.</li>
+<li>Run the `etl.py` to read the json and, write it in parquet format.</li>
 </ol>
 
