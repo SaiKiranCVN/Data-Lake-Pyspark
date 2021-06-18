@@ -34,7 +34,7 @@ def process_song_data(spark, input_data, output_data):
     """
     
     # get filepath to song data file, data is song_data/A/A/A/song.json
-    song_data =  input_data + 'song_data/*/*/*/*.json'
+    song_data =  input_data + 'song_data/A/A/A/*.json'
     
     # Assigning right datatype
     songSchema = R([
@@ -50,7 +50,8 @@ def process_song_data(spark, input_data, output_data):
     ])
     
     # read song data file
-    df = spark.read.json(song_data,schema=songSchema)
+    df = spark.read.json(song_data,schema=songSchema,columnNameOfCorruptRecord='corrupt_record').dropDuplicates()
+    print("Read completed")
 
     # extract columns to create songs table
     songs_table = ["title", "artist_id","year", "duration"]
@@ -61,7 +62,8 @@ def process_song_data(spark, input_data, output_data):
     
     # write songs table to parquet files partitioned by year and artist
     # partitioning by year and artist_id, and saving in 'songs' folder
-    songs_table.write.mode("overwrite").partitionBy("year", "artist_id").parquet(output_data + 'songs/')
+    songs_table.write.mode("overwrite").partitionBy("year", "artist_id").parquet(output_data + 'songs')
+    print("Songs Write Completed")
     
     ## Artist
     
@@ -72,7 +74,8 @@ def process_song_data(spark, input_data, output_data):
     artists_table = df.selectExpr(artists_fields).dropDuplicates()
     
     # write artists table to parquet files, in 'artists' folder
-    artists_table.write.mode("overwrite").parquet(output_data + 'artists/')
+    artists_table.write.mode("overwrite").parquet(output_data + 'artists')
+    print("Artists Write Completed")
 
 
 def process_log_data(spark, input_data, output_data):
@@ -81,10 +84,12 @@ def process_log_data(spark, input_data, output_data):
     Takes spark context, input_data path and output_data path as parameters.
     """
     # get filepath to log data file, data is log_data/year/month/log.json
-    log_data = input_data + 'log_data/*/*/*.json'
+    log_data = input_data + 'log_data/2018/11/*.json'
 
     # read log data file
     df = spark.read.json(log_data)
+    print("Read completed")
+    
     
     # filter by actions for song plays
     df = df.filter(df.page == 'NextSong')
@@ -96,7 +101,8 @@ def process_log_data(spark, input_data, output_data):
     users_table = df.selectExpr(users_fields).dropDuplicates()
     
     # write users table to parquet files, in 'users' folder
-    users_table.write.mode("overwrite").parquet(output_data + 'users/')
+    users_table.write.mode("overwrite").parquet(output_data + 'users')
+    print("Users table write complete")
 
     # create timestamp column from original timestamp column
     get_timestamp = udf(lambda x: x / 1000, TimestampType())
@@ -119,6 +125,7 @@ def process_log_data(spark, input_data, output_data):
     
     # write time table to parquet files partitioned by year and month, in "time" folder
     time_table.write.mode("overwrite").partitionBy("year", "month").parquet(output_data + "time")
+    print("Time_table write complete")
 
     ## For Songplays, we need both artist and song tables
     # read in song data to use for songplays table, reading from the file we saved
@@ -152,12 +159,13 @@ def process_log_data(spark, input_data, output_data):
 
     # write songplays table to parquet files partitioned by year and month, in "songplays" folder
     songplays_table.write.mode("overwrite").partitionBy("year", "month").parquet(output_data, 'songplays')
+    print("Songplays write complete")
 
 
 def main():
     spark = create_spark_session()
     input_data = "s3a://udacity-dend/"
-    output_data = "s3a://udacitydataengineernd/"
+    output_data = "s3a://datalakeoutputnd/"
     
     process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
