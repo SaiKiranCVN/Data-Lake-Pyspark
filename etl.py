@@ -34,7 +34,7 @@ def process_song_data(spark, input_data, output_data):
     """
     
     # get filepath to song data file, data is song_data/A/A/A/song.json
-    song_data =  input_data + 'song_data/A/*/*/*.json'
+    song_data =  input_data + 'song_data/*/*/*/*.json'
     
     # Assigning right datatype
     songSchema = R([
@@ -81,7 +81,7 @@ def process_log_data(spark, input_data, output_data):
     Takes spark context, input_data path and output_data path as parameters.
     """
     # get filepath to log data file, data is log_data/year/month/log.json
-    log_data = input_data + 'log_data/2018/11/*.json'
+    log_data = input_data + 'log_data/*/*/*.json'
 
     # read log data file
     df = spark.read.json(log_data)
