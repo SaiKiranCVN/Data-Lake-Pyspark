@@ -152,7 +152,7 @@ def process_log_data(spark, input_data, output_data):
     """)
 
     # write songplays table to parquet files partitioned by year and month, in "songplays" folder
-    songplays_table.write.partitionBy("year", "month").mode("overwrite").parquet(output_data, 'songplays')
+    songplays_table.write.partitionBy("year", "month").mode("overwrite").parquet(output_data + 'songplays')
     print("Songplays write complete")
 
 
